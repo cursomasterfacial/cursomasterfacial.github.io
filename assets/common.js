@@ -83,52 +83,5 @@
     addEventListener('keydown', e => e.key === 'Escape' && set(false));
   }
 
-  /* ---------- inscrição: valida e abre WhatsApp com a mensagem pronta ---------- */
-  $$('form[data-insc]').forEach(form => {
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      let ok = true;
-      const chk = (name, valid, msg) => {
-        const inp = form.elements[name], f = inp.closest('.field');
-        f.classList.toggle('err', !valid);
-        $('.f-err', f).textContent = valid ? '' : msg;
-        if (!valid && ok) { inp.focus(); ok = false; }
-      };
-      const v = n => form.elements[n].value.trim();
-      chk('nome', v('nome').length >= 3, 'Indique o seu nome.');
-      chk('email', /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('email')), 'Indique um email válido.');
-      chk('tel', v('tel').replace(/\D/g, '').length >= 9, 'Indique um telefone de contacto.');
-      if (!ok) return;
-      const msg = `Olá! Quero garantir a minha vaga no Curso Master Facial · Regenera Lifting Method (11 e 12 de outubro, Vila Franca de Xira).\n\nNome: ${v('nome')}\nEmail: ${v('email')}\nTelefone: ${v('tel')}`;
-      const url = `https://wa.me/${D.wa}?text=${encodeURIComponent(msg)}`;
-      try { window.open(url, '_blank', 'noopener'); } catch (_) {}
-      form.hidden = true;
-      const okEl = form.nextElementSibling;
-      if (okEl) {
-        /* link real como garantia: nem todos os browsers deixam abrir janelas por script */
-        let a = okEl.querySelector('a.wa');
-        if (!a) {
-          a = document.createElement('a'); a.className = 'btn wa'; a.target = '_blank'; a.rel = 'noopener';
-          a.style.cssText = 'margin-top:16px;width:100%';
-          a.textContent = 'Abrir WhatsApp';
-          const num = document.createElement('p');
-          num.style.cssText = 'margin-top:10px;font-size:13px;opacity:.75';
-          num.textContent = 'Ou envie mensagem para +351 969 290 136';
-          okEl.append(a, num);
-        }
-        a.href = url;
-        okEl.hidden = false; okEl.focus();
-      }
-    });
-  });
-
-  /* pré-visualização: #shot=1200 abre a página já nessa posição */
-  const shot = location.hash.match(/^#shot=(\d+)/);
-  if (shot) {
-    /* modo de captura: sem transições, para ver o estado final de cada secção */
-    const st = document.createElement('style'); st.textContent = '*,*::before,*::after{transition:none!important;animation-duration:.001s!important}html{scroll-behavior:auto!important}';
-    document.head.append(st);
-    history.scrollRestoration = 'manual'; addEventListener('load', () => setTimeout(() => scrollTo({ top: +shot[1], behavior: 'instant' }), 50)); }
-
   window.M = { $, $$, rm, clamp, esc, D, watch };
 })();
